@@ -119,12 +119,6 @@
 </head>
 <body>
 
-  <div id="birthdayBanner" class="hidden">
-    <div class="fireworks"></div>
-    <h2>🎉 Feliz Aniversário Mestre! 🎂</h2>
-    <p>Que seu dia seja incrível e cheio de coisas boas! 🥳</p>
-  </div>
-
   <h1>Controle de Dinheiro</h1>
 
   <div class="section" id="values">
@@ -771,72 +765,6 @@
     updateMonthlySummary();
     document.getElementById('customWorkDate').value = new Date().toISOString().split('T')[0];
     document.getElementById('customExpenseDate').value = new Date().toISOString().split('T')[0];
-  </script>
-  <style>
-    #birthdayBanner {
-      position: relative;
-      background: linear-gradient(135deg, #22aa00, #3e0acc);
-      color: white;
-      text-align: center;
-      padding: 2rem 1rem;
-      border-radius: 15px;
-      margin-bottom: 1.5rem;
-      animation: pulse 2s infinite;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-    }
-
-    #birthdayBanner h2 {
-      font-size: 2rem;
-      margin: 0.5rem 0;
-    }
-
-    #birthdayBanner p {
-      margin: 0;
-      font-size: 1.2rem;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.02); }
-    }
-
-    /* Fogos simples */
-    .fireworks {
-      position: absolute;
-      top: -20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100px;
-      height: 100px;
-      background: radial-gradient(circle, #fff 10%, transparent 11%) center/10px 10px;
-      animation: explode 1s infinite ease-in-out;
-      opacity: 0.5;
-    }
-
-    @keyframes explode {
-      0% { transform: translateX(-50%) scale(0.8); opacity: 0.2; }
-      50% { transform: translateX(-50%) scale(1.5); opacity: 1; }
-      100% { transform: translateX(-50%) scale(0.8); opacity: 0.2; }
-    }
-  </style>
-  <script>
-  // 🎉 Mensagem de aniversário
-  function checkBirthday() {
-    const today = new Date();
-    const day = today.getDate();
-    const month = today.getMonth() + 1; // janeiro = 0
-    const banner = document.getElementById('birthdayBanner');
-
-    if (day === 20 && month === 7) {
-      banner.classList.remove('hidden');
-    }
-  }
-
-  checkBirthday(); // chama quando carregar
   </script>
 </body>
 </html>
