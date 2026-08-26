@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Controle de Dinheiro</title>
-  <link rel="shortcut icon" href="icon.png">    
+  <link rel="shortcut icon" href="icon.png">
   <style>
     :root {
       color-scheme: dark;
     }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -16,31 +18,42 @@
       color: #ffffff;
       padding: 1rem;
     }
-    h1, h2 {
+
+    h1,
+    h2 {
       text-align: center;
     }
+
     .section {
       margin: 1rem 0;
       padding: 1rem;
       background-color: #1e1e1e;
       border-radius: 10px;
     }
+
     .panel {
       display: flex;
       justify-content: space-around;
       flex-wrap: wrap;
     }
+
     .panel div {
       margin: 1rem;
       font-size: 1.2rem;
     }
-    label, input, select, button, textarea {
+
+    label,
+    input,
+    select,
+    button,
+    textarea {
       display: block;
       width: 100%;
       margin-top: 0.5rem;
       margin-bottom: 1rem;
       font-size: 1rem;
     }
+
     button {
       padding: 0.5rem;
       background-color: #333;
@@ -49,74 +62,192 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
     button:hover {
       background-color: #555;
     }
+
     #expenseDetailsList li {
       margin: 0.25rem 0;
     }
+
     .centrado {
       display: block;
       text-align: center;
       font-weight: bold;
     }
+
     .days-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-  }
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-top: 0.5rem;
+    }
 
-  .day-tag {
-    background-color: #333;
-    padding: 0.4rem 0.6rem;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    color: #fff;
-  }
-  .day-tag.despesa { background-color: #f44336;} /* Vermelho para dias com despesa*/
-  .day-tag.worked { background-color: #4caf50; } /* Verde para dias trabalhados */
-  .day-tag.extra { background-color: #3639f4; } /* Azul para dias com receita extra */
-  .day-tag.not-worked { background-color: #555; } /* Cinza para dias não trabalhados */
+    .calendar-weekday {
+      text-align: center;
+      font-weight: bold;
+      padding: 0.5rem 0;
+      color: #aaa;
+    }
 
-  .day-tag.zero_saldo { background-color: #999; } /* Cinza para dias com saldo neutro */
-  .day-tag.negativo { background-color: #aa0000; } /* Despesa > (salário + gorjeta || extra) */
-  .day-tag.positivo { background-color: #0d8f00; } /* Salário + gorjeta > (despesa || extra) */
-  .day-tag.extra_dominante { background-color: #1a1aff; } /* Extra > (salário + gorjeta || despesa) */
-  .sumir {
-    display: none;
-  }
-  .section:hover .sumir {
-    display: block;
-  }
+    .calendar-day {
+      min-height: 75px;
+      background: #252525;
+      color: #fff;
+      border-radius: 8px;
+      padding: 6px;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.15s, background 0.15s;
+    }
 
-  #btnTop {
-    display: none;
-    position: fixed;
-    bottom: 1rem;
-    right: 15px;
-    z-index: 10;
-    width: 48px;
-    height: 48px;
-    font-size: 22px;
-    background-color: #fff;
-    color: #000;
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    cursor: pointer;
-    transition: opacity 0.3s;
-    text-align: center;
-    line-height: 48px; /* Centraliza verticalmente */
-    padding: 0;
-  }
+    .calendar-day:hover {
+      transform: scale(1.03);
+      background: #181818;
+    }
 
-  #btnTop:hover {
-    background-color: #e6e6e6;
-  }
+    .calendar-day .empty {
+      background: transparent;
+      cursor: default;
+    }
 
+    .calendar-day .day-number {
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .calendar-day .day-saldo {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      word-break: break-word;
+    }
+
+    /* Estados financeiros */
+
+    .calendar-day.despesa {
+      background-color: #f44336;  /* Vermelho para dias com despesa*/
+    }
+
+    .calendar-day.worked {
+      background-color: #4caf50;  /* Verde para dias trabalhados */
+    }
+
+    .calendar-day.extra {
+      background-color: #3639f4;  /* Azul para dias com receita extra */
+    }
+
+    .calendar-day.not-worked {
+      background-color: #555; /* Cinza para dias não trabalhados */
+    }
+
+    .calendar-day.zero_saldo {
+      background-color: #999; /* Cinza para dias com saldo neutro */
+    }
+
+    .calendar-day.negativo {
+      background-color: #aa0000;  /* Despesa > (salário + gorjeta || extra) */
+    }
+
+    .calendar-day.positivo {
+      background-color: #0d8f00;  /* Salário + gorjeta > (despesa || extra) */
+    }
+
+    .calendar-day.extra_dominante {
+      background-color: #1a1aff; /* Extra > (salário + gorjeta || despesa) */
+    }
+
+    /* Dia de hoje */
+    .calendar-day.today {
+      box-shadow: 0 0 0 2px #fff;
+    }
+
+    .calendar-day.other-month {
+      opacity: 0.35;
+      background-color: #1b1b1b;
+    }
+
+    .calendar-day.other-month:hover {
+      opacity: 0.5;
+      background-color: #252525;
+    }
+
+    .calendar-day.other-month .day-number,
+    .calendar-day.other-month .day-saldo {
+      color: #888;
+    }
+
+    .calendar-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 1rem;
+      justify-content: center;
+    }
+
+    .calendar-legend span {
+      padding: 5px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+
+    .legend-worked {
+      background: #4caf50;
+    }
+
+    .legend-expense {
+      background: #f44336;
+    }
+
+    .legend-extra {
+      background: #3639f4;
+    }
+
+    .legend-positive {
+      background: #0d8f00;
+    }
+
+    .legend-negative {
+      background: #aa0000;
+    }
+
+    .sumir {
+      display: none;
+    }
+
+    .section:hover .sumir {
+      display: block;
+    }
+
+    #btnTop {
+      display: none;
+      position: fixed;
+      bottom: 1rem;
+      right: 15px;
+      z-index: 10;
+      width: 48px;
+      height: 48px;
+      font-size: 22px;
+      background-color: #fff;
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      transition: opacity 0.3s;
+      text-align: center;
+      line-height: 48px;
+      /* Centraliza verticalmente */
+      padding: 0;
+    }
+
+    #btnTop:hover {
+      background-color: #e6e6e6;
+    }
   </style>
 </head>
+
 <body>
 
   <h1>Controle de Dinheiro</h1>
@@ -132,18 +263,10 @@
   </div>
 
   <div class="section" id="work-log">
-    <h2>Registro Diário</h2>
-    <p>Você trabalhou hoje?</p>
-    <button onclick="registerWork(true)">Sim</button>
-    <button onclick="registerWork(false)">Não</button>
-  </div>
-
-  <div class="section" id="calendar-section">
-    <h2>📆 Registrar Dia Específico</h2>
-    <label for="customWorkDate">Escolha a data:</label>
+    <h2>Registro</h2>
+    <label for="customWorkDate">Data</label>
     <input type="date" id="customWorkDate">
-    <button onclick="registerCustomWork()">Registrar dia trabalhado</button>
-    <button onclick="registerCustomNotWork()">Registrar dia não trabalhado</button>
+    <button onclick="registerCustomWork()">Registrar</button>
   </div>
 
   <div class="sumir" id="work-log-list-section">
@@ -152,7 +275,7 @@
   </div>
 
   <div class="section">
-    <h2>➕ Adicionar Receita Extra</h2>
+    <h2>Adicionar Receita Extra</h2>
     <label for="extraIncomeAmount">Valor</label>
     <input type="number" id="extraIncomeAmount" placeholder="Ex: 50">
 
@@ -169,602 +292,1058 @@
     <h2>Adicionar Despesa</h2>
     <label for="expenseAmount">Valor</label>
     <input type="number" id="expenseAmount" placeholder="Ex: 10">
+
     <label for="expenseDesc">Descrição</label>
     <input type="text" id="expenseDesc" placeholder="Ex: comida, transporte...">
+
+    <label for="expenseDate">Data</label>
+    <input type="date" id="expenseDate">
+
     <label for="expenseSource">Origem do Dinheiro</label>
     <select id="expenseSource">
       <option value="salario">Salário</option>
       <option value="gorjetas">Gorjetas</option>
       <option value="receita">Receita Extra</option>
     </select>
+
     <button onclick="addExpense()">Adicionar Despesa</button>
   </div>
 
-  <div class="section">
-    <h2>🕒 Registrar Despesa em Data Específica</h2>
-    <label for="customExpenseDate">Escolha a data:</label>
-    <input type="date" id="customExpenseDate">
-
-    <label for="customExpenseAmount">Valor</label>
-    <input type="number" id="customExpenseAmount" placeholder="Ex: 10">
-
-    <label for="customExpenseDesc">Descrição</label>
-    <input type="text" id="customExpenseDesc" placeholder="Ex: comida, transporte...">
-
-    <label for="customExpenseSource">Origem do Dinheiro</label>
-    <select id="customExpenseSource">
-      <option value="salario">Salário</option>
-      <option value="gorjetas">Gorjetas</option>
-      <option value="receita">Receita Extra</option>
-    </select>
-
-    <button onclick="addCustomExpense()">Adicionar Despesa</button>
-  </div>
-
   <div class="section" id="monthly-summary">
-    <h2>📊 Resumo Mensal</h2>
+    <h2>Resumo Mensal</h2>
     <div>
-      <strong class="centrado">🗓️ Historico de Dias:</strong>
-      <div id="workDaysGrid" class="days-grid"></div>
-      <div id="dayDetail" class="section" style="display: none;">
-      <h3>📅 Detalhes do dia: <span id="selectedDayLabel"></span></h3>
-      <p><strong>Salário:</strong> €<span id="detailSalary">0.00</span></p>
-      <p><strong>Gorjetas:</strong> €<span id="detailTip">0.00</span></p>
-      <p><strong>Receita Extra:</strong> €<span id="detailReceita">0.00</span></p>
-      <p><strong>Despesas:</strong> €<span id="detailExpense">0.00</span></p>
-      <div>
-        <strong>Detalhes das despesas:</strong>
-        <ul id="detailExpenseList"></ul>
-      </div>
-      <p><strong>Total do dia:</strong> €<span id="detailTotal">0.00</span></p>
-    </div>
-    <br>
-    <strong class="centrado" id="currentMonthLabel"></strong>
-    <script>
-      const label = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
-      document.getElementById('currentMonthLabel').innerText = label.charAt(0).toUpperCase() + label.slice(1);
-    </script>
-    <div style="display: flex; justify-content: space-between;">
-      <button onclick="changeMonth(-1)">← Mês anterior</button>
-      <button onclick="changeMonth(1)">Próximo mês →</button>
-    </div>
-    <div id="monthDetails" style="margin-top: 1rem;">
-      <p><strong>Dias trabalhados:</strong> <span id="monthWorkDays">0</span></p>
-      <p><strong>Dias não trabalhados:</strong> <span id="monthNotWorkDays">0</span></p>
-      <p><strong>Salário total do mês:</strong> €<span id="monthSalary">0.00</span></p>
-      <p><strong>Gorjetas:</strong> €<span id="monthTips">0.00</span></p>
-      <p><strong>Receita Extra:</strong> €<span id="monthReceita">0.00</span></p>
-      <p><strong>Despesas:</strong> €<span id="monthExpenses">0.00</span></p>
-      <div>
-        <strong>Detalhes das despesas:</strong>
-        <ul id="expenseDetailsList"></ul>
-      </div>
-      <p><strong>Total do mês:</strong> €<span id="monthTotal">0.00</span></p>
-    </div>
-  </div>
-
-  <div class="section">
-    <h2>🗑️ Remover Dados</h2>
-    <label for="removerData">Escolha a data:</label>
-    <input type="date" id="removerData">
-    <label for="removerObs">Observação:</label>
-    <input type="text" id="removerObs" placeholder="Ex: gym, jantar...">
-    <button onclick="removerDespesasPorDataEObs()">🗑️ Remover despesas por data e observação</button>
-    <button onclick="removerDiaTrabalhadoPorData()">⛔ Remover dia de trabalho</button>
-    <button onclick="removerDespesasPorData()">💸 Remover despesas do dia</button>
-    <button onclick="removerReceitaPorData()">💸 Remover receita extra do dia</button>
-    <button onclick="removertodoodia()">🗑️ Remover todas as entradas do dia</button>
-  </div>
-
-  <button id="btnTop" onclick="scrollToTop()">▲</button>
-
-  <script>
-
-    window.addEventListener("scroll", () => {
-      const btn = document.getElementById("btnTop");
-      if (document.documentElement.scrollTop > 100 || document.body.scrollTop > 100) {
-        btn.style.display = "block";
-      } else {
-        btn.style.display = "none";
-      }
-    });
-
-    function scrollToTop() {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-    }
-
-    let data = JSON.parse(localStorage.getItem('financeData')) || {
-      salaryDays: 0,
-      tips: [],
-      expenses: [],
-      extraIncomes: [],
-      workLog: []
-    };
-
-    data.salaryDays = Number(data.salaryDays) || 0;
-    data.tips = Array.isArray(data.tips) ? data.tips : [];
-    data.workLog = Array.isArray(data.workLog) ? data.workLog : [];
-    data.extraIncomes = Array.isArray(data.extraIncomes) ? data.extraIncomes : [];
-
-    function saveData() {
-      localStorage.setItem('financeData', JSON.stringify(data));
-    }
-
-    function updateDisplay() {
-      const salaryTotal = data.salaryDays * 30;
-      const tipsTotal = data.tips.reduce((sum, t) => sum + t.value, 0);
-
-      const salaryExpenses = data.expenses.filter(e => e.source === 'salario')
-        .reduce((sum, e) => sum + e.amount, 0);
-      const tipsExpenses = data.expenses.filter(e => e.source === 'gorjetas')
-        .reduce((sum, e) => sum + e.amount, 0);
-      const receitaExpenses = data.expenses.filter(e => e.source === 'receita')
-        .reduce((sum, e) => sum + e.amount, 0);
-
-      let remainingSalary = Math.max(0, salaryTotal - salaryExpenses);
-      let remainingTips = Math.max(0, tipsTotal - tipsExpenses);
-      const extraIncomeTotal = Array.isArray(data.extraIncomes)
-        ? data.extraIncomes.reduce((sum, e) => sum + e.amount, 0)
-        : 0;
-      let remainingReceita = Math.max(0, extraIncomeTotal - receitaExpenses);
-      const grandTotal = remainingSalary + remainingTips + remainingReceita;
-
-      document.getElementById('salario').innerText = remainingSalary.toFixed(2);
-      document.getElementById('gorjetas').innerText = remainingTips.toFixed(2);
-      document.getElementById('receita').innerText = remainingReceita.toFixed(2);
-      document.getElementById('total').innerText = grandTotal.toFixed(2);
-
-      const logList = document.getElementById('workLogList');
-      logList.innerHTML = '';
-      data.workLog
-        .filter(d => d.worked)
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
-        .forEach(d => {
-          const [year, month, day] = d.date.split('-');
-          const li = document.createElement('li');
-          li.textContent = `${day}.${month}.${year}`;
-          logList.appendChild(li);
-        });
-    }
-
-    function registerWork(didWork) {
-      const today = new Date().toISOString().split('T')[0];
-      if (didWork) {
-        if (!data.workLog.some(entry => entry.date === today)) {
-          data.salaryDays++;
-          data.workLog.push({ date: today, worked: true });
-        }
-        if (confirm('Você recebeu gorjeta hoje?')) {
-          const tipStr = prompt('Quanto você recebeu de gorjeta?');
-          if (tipStr !== null) {
-            const tip = parseFloat(tipStr.replace(',', '.'));
-            if (!isNaN(tip)) data.tips.push({ value: tip, date: today });
-          }
-        }
-        saveData();
-        updateDisplay();
-        alert('Registro salvo!');
-      } else {
-        const motivo = prompt('Motivo para não trabalhar hoje:');
-        if (motivo) {
-          data.workLog.push({ date: today, worked: false, reason: motivo });
-        }
-        alert('Dia registrado como não trabalhado.');
-        updateDisplay();
-      }
-    }
-
-    function registerCustomWork() {
-      const selectedDate = document.getElementById('customWorkDate').value;
-      if (!selectedDate) return alert('Por favor, escolha uma data.');
-
-      if (!data.workLog.some(d => d.date === selectedDate)) {
-        data.salaryDays++;
-        data.workLog.push({ date: selectedDate, worked: true });
-        if (confirm('Você recebeu gorjeta nesse dia?')) {
-          const tipStr = prompt('Quanto você recebeu de gorjeta?');
-          if (tipStr !== null) {
-            const tip = parseFloat(tipStr.replace(',', '.'));
-            if (!isNaN(tip)) data.tips.push({ value: tip, date: selectedDate });
-          }
-        }
-        saveData();
-        updateDisplay();
-        alert('Dia registrado com sucesso!');
-      } else {
-        alert('Esse dia já foi registrado.');
-      }
-    }
-
-    function registerCustomNotWork() {
-      const selectedDate = document.getElementById('customWorkDate').value;
-      if (!selectedDate) return alert('Por favor, escolha uma data.');
-
-      if (!data.workLog.some(d => d.date === selectedDate)) {        
-        const motivo = prompt('Motivo para não trabalhar hoje:');
-        if (motivo) {
-          data.workLog.push({ date: selectedDate, worked: false, reason: motivo });
-        }
-        saveData();
-        alert('Dia registrado como não trabalhado com sucesso!');
-        updateDisplay();
-      } else {
-        alert('Esse dia já foi registrado.');
-      }
-    }
+      <strong class="centrado" id="currentMonthLabel"></strong>
       
-    document.getElementById('extraIncomeDate').value = new Date().toISOString().split('T')[0];
-    function addExtraIncome() {
-      const amount = parseFloat(document.getElementById('extraIncomeAmount').value.replace(',', '.'));
-      const desc = document.getElementById('extraIncomeDesc').value;
-      const date = document.getElementById('extraIncomeDate').value;
+      <div class="calendar-legend">
+        <span class="legend-worked">Trabalhado</span>
+        <span class="legend-expense">Despesa</span>
+        <span class="legend-extra">Receita extra</span>
+        <span class="legend-positive">Saldo positivo</span>
+        <span class="legend-negative">Saldo negativo</span>
+      </div>
+      
+      <div id="workDaysGrid" class="days-grid"></div>
 
-      if (!date) return alert('Escolha uma data.');
-      if (isNaN(amount) || amount <= 0) return alert('Valor inválido');
 
-      data.extraIncomes.push({
-        amount,
-        desc,
-        date
+      <div id="dayDetail" class="section" style="display: none;">
+        <h3>Detalhes do dia: <span id="selectedDayLabel"></span></h3>
+        <p><strong>Salário:</strong> €<span id="detailSalary">0.00</span></p>
+        <p><strong>Gorjetas:</strong> €<span id="detailTip">0.00</span></p>
+        <p><strong>Receita Extra:</strong> €<span id="detailReceita">0.00</span></p>
+        <div>
+          <strong>Detalhes das receitas extras:</strong>
+          <ul id="detailReceitaList"></ul>
+        </div>
+        <p><strong>Despesas:</strong> €<span id="detailExpense">0.00</span></p>
+        <div>
+          <strong>Detalhes das despesas:</strong>
+          <ul id="detailExpenseList"></ul>
+        </div>
+        <p><strong>Total do dia:</strong> €<span id="detailTotal">0.00</span></p>
+      </div>
+      <script>
+        const label = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
+        document.getElementById('currentMonthLabel').innerText = label.charAt(0).toUpperCase() + label.slice(1);
+      </script>
+      <div style="display: flex; justify-content: space-between;">
+        <button onclick="changeMonth(-1)">← Mês anterior</button>
+        <button onclick="changeMonth(1)">Próximo mês →</button>
+      </div>
+      <div id="monthDetails" style="margin-top: 1rem;">
+        <p><strong>Dias trabalhados:</strong> <span id="monthWorkDays">0</span></p>
+        <p><strong>Dias não trabalhados:</strong> <span id="monthNotWorkDays">0</span></p>
+        <p><strong>Salário total do mês:</strong> €<span id="monthSalary">0.00</span></p>
+        <p><strong>Gorjetas:</strong> €<span id="monthTips">0.00</span></p>
+        <p><strong>Receita Extra:</strong> €<span id="monthReceita">0.00</span></p>
+        <div>
+          <strong>Detalhes das receitas extras:</strong>
+          <ul id="extraIncomeDetailsList"></ul>
+        </div>
+        <p><strong>Despesas:</strong> €<span id="monthExpenses">0.00</span></p>
+        <div>
+          <strong>Detalhes das despesas:</strong>
+          <ul id="expenseDetailsList"></ul>
+        </div>
+        <p><strong>Total do mês:</strong> €<span id="monthTotal">0.00</span></p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Remover Dados</h2>
+      <label for="removerData">Data</label>
+      <input type="date" id="removerData">
+      <label for="removerObs">Observação</label>
+      <input type="text" id="removerObs" placeholder="Ex: gym, jantar...">
+      <button onclick="removerDespesasPorDataEObs()">🗑️ Remover despesas por data e observação</button>
+      <button onclick="removerDiaTrabalhadoPorData()">⛔ Remover dia de trabalho</button>
+      <button onclick="removerDespesasPorData()">💸 Remover despesas do dia</button>
+      <button onclick="removerReceitaPorData()">💸 Remover receita extra do dia</button>
+      <button onclick="removertodoodia()">🗑️ Remover todas as entradas do dia</button>
+    </div>
+
+    <button id="btnTop" onclick="scrollToTop()">▲</button>
+
+    <script>
+
+      window.addEventListener("scroll", () => {
+        const btn = document.getElementById("btnTop");
+        if (document.documentElement.scrollTop > 100 || document.body.scrollTop > 100) {
+          btn.style.display = "block";
+        } else {
+          btn.style.display = "none";
+        }
       });
 
-      saveData();
-      updateDisplay();
-      updateMonthlySummary();
-      alert('Receita extra adicionada!');
-    }
-
-    function addExpense() {
-
-      const addId = confirm("Trabalhou hoje?\n Se sim, clique em 'OK'. Se não, clique em 'Cancelar'.");
-
-      if (addId == true){
-        id="monthNotWorkDays"
+      function scrollToTop() {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
       }
 
-      const amount = parseFloat(document.getElementById('expenseAmount').value.replace(',', '.'));
-      const desc = document.getElementById('expenseDesc').value;
-      const source = document.getElementById('expenseSource').value;
-      if (!isNaN(amount) && amount > 0) {
+      let data = JSON.parse(localStorage.getItem('financeData')) || {
+        salaryDays: 0,
+        tips: [],
+        expenses: [],
+        extraIncomes: [],
+        workLog: []
+      };
+
+      data.salaryDays = Number(data.salaryDays) || 0;
+      data.tips = Array.isArray(data.tips) ? data.tips : [];
+      data.workLog = Array.isArray(data.workLog) ? data.workLog : [];
+      data.extraIncomes = Array.isArray(data.extraIncomes) ? data.extraIncomes : [];
+
+      function saveData() {
+        localStorage.setItem('financeData', JSON.stringify(data));
+      }
+
+      function updateDisplay() {
+        const salaryTotal = data.salaryDays * 30;
+        const tipsTotal = data.tips.reduce((sum, t) => sum + t.value, 0);
+
+        const salaryExpenses = data.expenses.filter(e => e.source === 'salario')
+          .reduce((sum, e) => sum + e.amount, 0);
+        const tipsExpenses = data.expenses.filter(e => e.source === 'gorjetas')
+          .reduce((sum, e) => sum + e.amount, 0);
+        const receitaExpenses = data.expenses.filter(e => e.source === 'receita')
+          .reduce((sum, e) => sum + e.amount, 0);
+
+        let remainingSalary = Math.max(0, salaryTotal - salaryExpenses);
+        let remainingTips = Math.max(0, tipsTotal - tipsExpenses);
+        const extraIncomeTotal = Array.isArray(data.extraIncomes)
+          ? data.extraIncomes.reduce((sum, e) => sum + e.amount, 0)
+          : 0;
+        let remainingReceita = Math.max(0, extraIncomeTotal - receitaExpenses);
+        const grandTotal = remainingSalary + remainingTips + remainingReceita;
+
+        document.getElementById('salario').innerText = remainingSalary.toFixed(2);
+        document.getElementById('gorjetas').innerText = remainingTips.toFixed(2);
+        document.getElementById('receita').innerText = remainingReceita.toFixed(2);
+        document.getElementById('total').innerText = grandTotal.toFixed(2);
+
+        const logList = document.getElementById('workLogList');
+        logList.innerHTML = '';
+        data.workLog
+          .filter(d => d.worked)
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .forEach(d => {
+            const [year, month, day] = d.date.split('-');
+            const li = document.createElement('li');
+            li.textContent = `${day}.${month}.${year}`;
+            logList.appendChild(li);
+          });
+      }
+
+      function registerCustomWork() {
+        const selectedDate = document.getElementById('customWorkDate').value;
+        if (!selectedDate) return alert('Por favor, escolha uma data.');
+
+        if (!data.workLog.some(d => d.date === selectedDate)) {
+          data.salaryDays++;
+          data.workLog.push({ date: selectedDate, worked: true });
+          if (confirm('Você recebeu gorjeta nesse dia?')) {
+            const tipStr = prompt('Quanto você recebeu de gorjeta?');
+            if (tipStr !== null) {
+              const tip = parseFloat(tipStr.replace(',', '.'));
+              if (!isNaN(tip)) data.tips.push({ value: tip, date: selectedDate });
+            }
+          }
+          saveData();
+          updateDisplay();
+          updateMonthlySummary();
+          alert('Dia registrado com sucesso!');
+        } else {
+          alert('Esse dia já foi registrado.');
+        }
+      }
+
+      document.getElementById('extraIncomeDate').value = new Date().toISOString().split('T')[0];
+      function addExtraIncome() {
+        const amount = parseFloat(document.getElementById('extraIncomeAmount').value.replace(',', '.'));
+        const desc = document.getElementById('extraIncomeDesc').value;
+        const date = document.getElementById('extraIncomeDate').value;
+
+        if (!date) return alert('Escolha uma data.');
+        if (isNaN(amount) || amount <= 0) return alert('Valor inválido');
+
+        data.extraIncomes.push({
+          amount,
+          desc,
+          date
+        });
+
+        saveData();
+        updateDisplay();
+        updateMonthlySummary();
+        alert('Receita extra adicionada!');
+      }
+
+      function addExpense() {
+        const date = document.getElementById('expenseDate').value;
+        const amount = parseFloat(document.getElementById('expenseAmount').value.replace(',', '.'));
+        const desc = document.getElementById('expenseDesc').value;
+        const source = document.getElementById('expenseSource').value;
+
+        if (!date) return alert('Por favor, escolha uma data.');
+        if (isNaN(amount) || amount <= 0) return alert('Valor inválido');
+
         data.expenses.push({
           amount,
           desc,
           source,
-          date: new Date().toISOString().slice(0, 10)
+          date
         });
+
         saveData();
         updateDisplay();
-        alert('Despesa adicionada!');
-      } else {
-        alert('Valor inválido');
+        updateMonthlySummary();
+        alert('Despesa registrada!');
       }
-    }
 
-    function addCustomExpense() {
-      const date = document.getElementById('customExpenseDate').value;
-      const amount = parseFloat(document.getElementById('customExpenseAmount').value.replace(',', '.'));
-      const desc = document.getElementById('customExpenseDesc').value;
-      const source = document.getElementById('customExpenseSource').value;
+      let currentMonthOffset = 0;
 
-      if (!date) return alert('Por favor, escolha uma data.');
-      if (isNaN(amount) || amount <= 0) return alert('Valor inválido');
+      function getMonthKey(offset = 0) {
+        const now = new Date();
+        now.setMonth(now.getMonth() + offset);
+        return now.toISOString().slice(0, 7);
+      }
 
-      data.expenses.push({
-        amount,
-        desc,
-        source,
-        date
-      });
+      function changeMonth(direction) {
+        currentMonthOffset += direction;
+        updateMonthlySummary();
+      }
 
-      saveData();
-      updateDisplay();
-      updateMonthlySummary();
-      alert('Despesa registrada!');
-    }
+      function updateMonthlySummary() {
+        const monthKey = getMonthKey(currentMonthOffset);
+        const [year, month] = monthKey.split('-');
 
-    let currentMonthOffset = 0;
+        const label = new Date(`${monthKey}-01T12:00:00`).toLocaleString(
+          'pt-BR',
+          {
+            month: 'long',
+            year: 'numeric'
+          }
+        );
 
-    function getMonthKey(offset = 0) {
-      const now = new Date();
-      now.setMonth(now.getMonth() + offset);
-      return now.toISOString().slice(0, 7);
-    }
+        document.getElementById('currentMonthLabel').textContent =
+          label.charAt(0).toUpperCase() + label.slice(1);
 
-    function changeMonth(direction) {
-      currentMonthOffset += direction;
-      updateMonthlySummary();
-    }
 
-    function updateMonthlySummary() {
-      const monthKey = getMonthKey(currentMonthOffset);
-      const [year, month] = monthKey.split('-');
-      const label = new Date(`${monthKey}-01`).toLocaleString('pt-BR', { month: 'long', year: 'numeric' });
-      document.getElementById('currentMonthLabel').textContent = label.charAt(0).toUpperCase() + label.slice(1);
+        // =========================================================
+        // DADOS DO MÊS
+        // =========================================================
 
-      const workDays = data.workLog
-        .filter(d => d.worked && d.date.startsWith(monthKey))
-        .map(d => d.date);
+        const workDays = data.workLog
+          .filter(d =>
+            d.worked &&
+            d.date.startsWith(monthKey)
+          )
+          .map(d => d.date);
 
-      const notWorkDays = data.workLog
-        .filter(d => !d.worked && d.date.startsWith(monthKey))
-        .map(d => d.date);
+        const notWorkDays = data.workLog
+          .filter(d =>
+            !d.worked &&
+            d.date.startsWith(monthKey)
+          )
+          .map(d => d.date);
 
-      const monthTips = data.tips
-        .filter(t => t.date && t.date.startsWith(monthKey))
-        .reduce((sum, t) => sum + t.value, 0);
-      document.getElementById('monthTips').textContent = monthTips.toFixed(2);
 
-      const monthExtras = data.extraIncomes
-        .filter(e => e.date && e.date.startsWith(monthKey))
-        .reduce((sum, e) => sum + e.amount, 0);
-      document.getElementById('monthReceita').textContent = monthExtras.toFixed(2);
+        const monthTips = data.tips
+          .filter(t =>
+            t.date &&
+            t.date.startsWith(monthKey)
+          )
+          .reduce((sum, t) => sum + Number(t.value), 0);
 
-      const monthExpenses = data.expenses.filter(e => e.date && e.date.startsWith(monthKey));
-      const totalExpenses = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
-      document.getElementById('monthExpenses').textContent = totalExpenses.toFixed(2);
+        document.getElementById('monthTips').textContent =
+          monthTips.toFixed(2);
 
-      const list = document.getElementById('expenseDetailsList');
-      list.innerHTML = '';
-      monthExpenses.forEach(e => {
-        const li = document.createElement('li');
-        li.innerHTML = `€${e.amount.toFixed(2)} - ${e.source}${e.desc ? ` - ${e.desc}` : ''}`;
-        list.appendChild(li);
-      });
 
-      const monthSalary = workDays.length * 30;
-      document.getElementById('monthSalary').textContent = monthSalary.toFixed(2);
-      const grandTotal = monthSalary + monthTips + monthExtras - totalExpenses;
-      document.getElementById('monthTotal').textContent = grandTotal.toFixed(2);
+        const monthExtras = data.extraIncomes
+          .filter(e =>
+            e.date &&
+            e.date.startsWith(monthKey)
+          )
+          .reduce((sum, e) => sum + Number(e.amount), 0);
 
-      document.getElementById('monthWorkDays').textContent = workDays.length;
+        document.getElementById('monthReceita').textContent =
+          monthExtras.toFixed(2);
 
-      document.getElementById('monthNotWorkDays').textContent = notWorkDays.length;
+        // =========================================================
+        // DETALHES DAS RECEITAS EXTRAS DO MÊS
+        // =========================================================
 
-      const grid = document.getElementById('workDaysGrid');
-      grid.innerHTML = '';
+        const monthExtraIncomes = data.extraIncomes.filter(e =>
+          e.date &&
+          e.date.startsWith(monthKey)
+        );
 
-      const workedDaysSet = new Set(workDays);
-      const expenseDays = new Set(
-        monthExpenses.map(e => e.date).filter(Boolean)
-      );
-      const extraDays = new Set(
-        data.extraIncomes
-          .filter(e => e.date && e.date.startsWith(monthKey))
-          .map(e => e.date)
-      );
-      const notWorkedDaysSet = new Set(
-        data.workLog
-          .filter(d => typeof d === 'object' && d.date && !d.worked && d.date.startsWith(monthKey))
-          .map(d => d.date)
-      );
+        const extraList =
+          document.getElementById('extraIncomeDetailsList');
 
-      const allDaysSet = new Set([
-        ...workedDaysSet,
-        ...expenseDays,
-        ...extraDays,
-        ...notWorkedDaysSet
-      ]);
+        extraList.innerHTML = '';
 
-      Array.from(allDaysSet).sort().forEach(date => {
-        const [year, month, day] = date.split('-');
-        const tag = document.createElement('div');
+        if (monthExtraIncomes.length === 0) {
 
-        const salary = data.workLog.some(d => d.date === date && d.worked) ? 30 : 0;
-        const tip = data.tips.filter(t => t.date === date).reduce((sum, t) => sum + t.value, 0);
-        const extra = data.extraIncomes.filter(e => e.date === date).reduce((sum, e) => sum + e.amount, 0);
-        const expense = data.expenses.filter(e => e.date === date).reduce((sum, e) => sum + e.amount, 0);
+          const li = document.createElement('li');
 
-        const saldo = salary + tip + extra - expense;
+          li.textContent = 'Nenhuma receita extra neste mês.';
 
-        let className = 'day-tag';
+          extraList.appendChild(li);
 
-        const isWorked = workedDaysSet.has(date);
-        const isNotWorked = notWorkedDaysSet.has(date);
+        } else {
 
-        if (isWorked)
-          className += ' worked';
+          monthExtraIncomes
+            .sort((a, b) => a.date.localeCompare(b.date))
+            .forEach(e => {
 
-        if (isNotWorked && salary + tip + extra + expense == 0)
-          className += ' not-worked';
+              const li = document.createElement('li');
 
-        if (expense !== 0 && salary + tip + extra === 0) {
-          className += ' despesa'; // Vermelho para dias com despesa
-          id="monthNotWorkDays";
+              const [year, month, day] = e.date.split('-');
 
-        } else if (extra !== 0 && salary + tip + expense === 0) {
-          className += ' extra'; // Azul para dias com receita extra
-          id="monthNotWorkDays";
+              li.textContent =
+                `${day}/${month}/${year} - ` +
+                `€${Number(e.amount).toFixed(2)}` +
+                `${e.desc ? ` - ${e.desc}` : ''}`;
 
-        } else if (saldo === 0 && !isNotWorked) {
-          className += ' zero_saldo'; // Cinza claro
+              extraList.appendChild(li);
 
-        } else if ((expense > (salary + tip) && (salary + tip) != 0) && (expense > extra && extra != 0)) {
-          className += ' negativo'; // Vermelho escuro
-
-        } else if ((extra > (salary + tip) && (salary + tip) != 0) && (extra > expense && expense != 0)) {
-          className += ' extra_dominante'; // Azul escuro
-
-        } else if (((salary + tip) > expense && expense != 0) && ((salary + tip) > extra && extra != 0)) {
-          className += ' positivo'; // Verde escuro
-
-        } else if ((expense > (salary + tip) && (salary + tip) != 0) || (expense > extra && extra != 0)) {
-          className += ' negativo'; // Vermelho escuro
-
-        } else if ((extra > (salary + tip) && (salary + tip) != 0) || (extra > expense && expense != 0)) {
-          className += ' extra_dominante'; // Azul escuro
-
-        } else if (((salary + tip) > expense && expense != 0) || ((salary + tip) > extra && extra != 0)) {
-          className += ' positivo'; // Verde escuro
+            });
         }
 
-        tag.className = className;
-        tag.textContent = `${day}/${month}`;
-        tag.style.cursor = 'pointer';
-        tag.onclick = () => showDayDetails(date);
-        grid.appendChild(tag);
-      });
-    }
+        const monthExpenses = data.expenses.filter(e =>
+          e.date &&
+          e.date.startsWith(monthKey)
+        );
 
-  let selectedDay = null; // Adicione esta variável global
+        const totalExpenses = monthExpenses
+          .reduce((sum, e) => sum + Number(e.amount), 0);
 
-  function showDayDetails(dateStr) {
-    const dayDetailDiv = document.getElementById('dayDetail');
-    // Se já está aberto para o mesmo dia, fecha
-    if (selectedDay === dateStr && dayDetailDiv.style.display === 'block') {
-      dayDetailDiv.style.display = 'none';
-      selectedDay = null;
-      return;
-    }
-    selectedDay = dateStr;
+        document.getElementById('monthExpenses').textContent =
+          totalExpenses.toFixed(2);
 
-    const salary = data.workLog.some(d => d.date === dateStr && d.worked) ? 30 : 0;
-    const tips = data.tips
-      .filter(t => t.date === dateStr)
-      .reduce((sum, t) => sum + t.value, 0);
-    const receita = data.extraIncomes
-      .filter(e => e.date === dateStr)
-      .reduce((sum, e) => sum + e.amount, 0);
+        // =========================================================
+        // DETALHES DAS DESPESAS DO MÊS
+        // =========================================================
 
-    
-    const expenses = data.expenses.filter(e => e.date === dateStr);
-    const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+        const list = document.getElementById('expenseDetailsList');
+        list.innerHTML = '';
 
-    document.getElementById('detailReceita').textContent = receita.toFixed(2);
+        monthExpenses
+          .sort((a, b) => a.date.localeCompare(b.date))
+          .forEach(e => {
 
-    const total = salary + tips + receita - totalExpenses;
-    document.getElementById('detailTotal').textContent = total.toFixed(2);
+            const li = document.createElement('li');
 
-    document.getElementById('selectedDayLabel').textContent =
-      new Date(dateStr).toLocaleDateString('pt-BR');
-    document.getElementById('detailSalary').textContent = salary.toFixed(2);
-    document.getElementById('detailTip').textContent = tips.toFixed(2);
-    document.getElementById('detailExpense').textContent = totalExpenses.toFixed(2);
-    document.getElementById('detailTotal').textContent = total.toFixed(2);
+            const dataFormatada = new Date(e.date + 'T12:00:00')
+              .toLocaleDateString('pt-BR');
 
-    const ul = document.getElementById('detailExpenseList');
-    ul.innerHTML = '';
-    expenses.forEach(e => {
-      const li = document.createElement('li');
-      li.textContent = `€${e.amount.toFixed(2)} - ${e.source}${e.desc ? ` - ${e.desc}` : ''}`;
-      ul.appendChild(li);
-    });
+            li.innerHTML =
+              `${dataFormatada} - ` +
+              `€${Number(e.amount).toFixed(2)} - ` +
+              `${e.source}` +
+              `${e.desc ? ` - ${e.desc}` : ''}`;
 
-    dayDetailDiv.style.display = 'block';
-  }
+            list.appendChild(li);
+          });
 
-  function removerDiaTrabalhadoPorData() {
-    const date = document.getElementById('removerData').value;
-    if (!date) return alert("Escolha uma data.");
+        // =========================================================
+        // TOTAIS DO MÊS
+        // =========================================================
 
-    if (!data.workLog.some(d => d.date === date && d.worked)) {
-      return alert("Esse dia não está registrado como trabalhado.");
-    }
+        const monthSalary = workDays.length * 30;
 
-    const confirmacao = confirm(`Deseja remover o dia de trabalho em ${formatarData(date)}?`);
-    if (confirmacao) {
-      data.workLog = data.workLog.filter(d => d.date !== date);
-      data.salaryDays = Math.max(0, data.salaryDays - 1);
+        document.getElementById('monthSalary').textContent =
+          monthSalary.toFixed(2);
 
-      // Remove gorjetas desse dia
-      data.tips = data.tips.filter(t => t.date !== date);
+        const grandTotal =
+          monthSalary +
+          monthTips +
+          monthExtras -
+          totalExpenses;
 
-      saveData();
+        document.getElementById('monthTotal').textContent =
+          grandTotal.toFixed(2);
+
+        document.getElementById('monthWorkDays').textContent =
+          workDays.length;
+
+        document.getElementById('monthNotWorkDays').textContent =
+          notWorkDays.length;
+
+
+        // =========================================================
+        // CALENDÁRIO
+        // =========================================================
+
+        const grid = document.getElementById('workDaysGrid');
+        grid.innerHTML = '';
+
+
+        // Cabeçalho
+        const weekDays = [
+          'Dom',
+          'Seg',
+          'Ter',
+          'Qua',
+          'Qui',
+          'Sex',
+          'Sáb'
+        ];
+
+        weekDays.forEach(day => {
+          const header = document.createElement('div');
+
+          header.className = 'calendar-weekday';
+          header.textContent = day;
+
+          grid.appendChild(header);
+        });
+
+
+        // =========================================================
+        // FUNÇÃO PARA OBTER OS DADOS DE QUALQUER DIA
+        // =========================================================
+
+        function getDayData(date) {
+
+          const salary = data.workLog.some(d =>
+            d.date === date &&
+            d.worked
+          ) ? 30 : 0;
+
+
+          const tip = data.tips
+            .filter(t => t.date === date)
+            .reduce(
+              (sum, t) => sum + Number(t.value),
+              0
+            );
+
+
+          const extra = data.extraIncomes
+            .filter(e => e.date === date)
+            .reduce(
+              (sum, e) => sum + Number(e.amount),
+              0
+            );
+
+
+          const expense = data.expenses
+            .filter(e => e.date === date)
+            .reduce(
+              (sum, e) => sum + Number(e.amount),
+              0
+            );
+
+
+          const saldo =
+            salary +
+            tip +
+            extra -
+            expense;
+
+
+          const isWorked = data.workLog.some(d =>
+            d.date === date &&
+            d.worked
+          );
+
+
+          const isNotWorked = data.workLog.some(d =>
+            d.date === date &&
+            !d.worked
+          );
+
+
+          return {
+            salary,
+            tip,
+            extra,
+            expense,
+            saldo,
+            isWorked,
+            isNotWorked
+          };
+        }
+
+
+        // =========================================================
+        // FUNÇÃO PARA CRIAR UM DIA DO CALENDÁRIO
+        // =========================================================
+
+        function createCalendarDay(date, otherMonth = false) {
+
+          const tag = document.createElement('div');
+
+          tag.className = 'calendar-day';
+
+
+          if (otherMonth) {
+            tag.classList.add('other-month');
+          }
+
+
+          const {
+            salary,
+            tip,
+            extra,
+            expense,
+            saldo,
+            isWorked,
+            isNotWorked
+          } = getDayData(date);
+
+
+          // =======================================================
+          // CORES DO DIA
+          // =======================================================
+
+          const hasIncome =
+            salary + tip > 0;
+
+          const hasExtra =
+            extra > 0;
+
+          const hasExpense =
+            expense > 0;
+
+
+          if (isWorked) {
+            tag.classList.add('worked');
+          }
+
+
+          if (
+            hasExpense &&
+            !hasIncome &&
+            !hasExtra
+          ) {
+
+            tag.classList.add('despesa');
+
+          } else if (
+            hasExtra &&
+            !hasIncome &&
+            !hasExpense
+          ) {
+
+            tag.classList.add('extra');
+
+          } else if (
+            saldo < 0
+          ) {
+
+            tag.classList.add('negativo');
+
+          } else if (
+            extra > salary + tip &&
+            extra > expense
+          ) {
+
+            tag.classList.add('extra_dominante');
+
+          } else if (
+            saldo > 0
+          ) {
+
+            tag.classList.add('positivo');
+
+          } else if (
+            saldo === 0 &&
+            (
+              isWorked ||
+              hasExpense ||
+              hasExtra ||
+              isNotWorked
+            )
+          ) {
+
+            tag.classList.add('zero_saldo');
+
+          } else if (
+            isNotWorked
+          ) {
+
+            tag.classList.add('not-worked');
+          }
+
+
+          // =======================================================
+          // DESTACAR HOJE
+          // =======================================================
+
+          const today =
+            new Date().toISOString().split('T')[0];
+
+          if (date === today) {
+            tag.classList.add('today');
+          }
+
+
+          // =======================================================
+          // NÚMERO DO DIA
+          // =======================================================
+
+          const number = document.createElement('div');
+
+          number.className = 'day-number';
+
+          const dayNumber =
+            Number(date.split('-')[2]);
+
+          number.textContent = dayNumber;
+
+          tag.appendChild(number);
+
+
+          // =======================================================
+          // SALDO
+          // =======================================================
+
+          const saldoElement =
+            document.createElement('div');
+
+          saldoElement.className = 'day-saldo';
+
+
+          if (
+            salary !== 0 ||
+            tip !== 0 ||
+            extra !== 0 ||
+            expense !== 0
+          ) {
+
+            saldoElement.textContent =
+              `${saldo >= 0 ? '+' : ''}€${saldo.toFixed(2)}`;
+
+          } else {
+
+            saldoElement.textContent = '';
+          }
+
+
+          tag.appendChild(saldoElement);
+
+
+          // =======================================================
+          // CLICAR NO DIA
+          // =======================================================
+
+          tag.onclick = () => showDayDetails(date);
+
+
+          return tag;
+        }
+
+
+        
+        // =========================================================
+        // CONSTRUIR CALENDÁRIO COMPLETO
+        // =========================================================
+
+        const firstDay = new Date(
+          Number(year),
+          Number(month) - 1,
+          1
+        );
+
+        const lastDay = new Date(
+          Number(year),
+          Number(month),
+          0
+        );
+
+        const firstWeekDay = firstDay.getDay();
+        const daysInMonth = lastDay.getDate();
+
+
+        // =========================================================
+        // FUNÇÃO SEGURA PARA FORMATAR DATA
+        // =========================================================
+
+        function formatDateLocal(date) {
+          const y = date.getFullYear();
+          const m = String(date.getMonth() + 1).padStart(2, '0');
+          const d = String(date.getDate()).padStart(2, '0');
+
+          return `${y}-${m}-${d}`;
+        }
+
+
+        // =========================================================
+        // DIAS DO MÊS ANTERIOR
+        // =========================================================
+
+        for (let i = firstWeekDay - 1; i >= 0; i--) {
+
+          const date = new Date(
+            Number(year),
+            Number(month) - 2,
+            new Date(
+              Number(year),
+              Number(month) - 1,
+              0
+            ).getDate() - i
+          );
+
+          const dateString = formatDateLocal(date);
+
+          grid.appendChild(
+            createCalendarDay(dateString, true)
+          );
+        }
+
+
+        // =========================================================
+        // DIAS DO MÊS ATUAL
+        // =========================================================
+
+        for (let day = 1; day <= daysInMonth; day++) {
+
+          const dateString =
+            `${year}-${month}-${String(day).padStart(2, '0')}`;
+
+          grid.appendChild(
+            createCalendarDay(dateString, false)
+          );
+        }
+
+
+        // =========================================================
+        // DIAS DO PRÓXIMO MÊS
+        // =========================================================
+
+        // Quantas células de dias já foram usadas
+        const usedDayCells =
+          firstWeekDay + daysInMonth;
+
+        // Quantas faltam para completar a última semana
+        const nextMonthDays =
+          (7 - (usedDayCells % 7)) % 7;
+
+
+        for (let day = 1; day <= nextMonthDays; day++) {
+
+          const date = new Date(
+            Number(year),
+            Number(month),
+            day
+          );
+
+          const dateString = formatDateLocal(date);
+
+          grid.appendChild(
+            createCalendarDay(dateString, true)
+          );
+        }
+      }
+      let selectedDay = null; // Adicione esta variável global
+
+      function showDayDetails(dateStr) {
+        const dayDetailDiv = document.getElementById('dayDetail');
+
+        // Se já está aberto para o mesmo dia, fecha
+        if (
+          selectedDay === dateStr &&
+          dayDetailDiv.style.display === 'block'
+        ) {
+          dayDetailDiv.style.display = 'none';
+          selectedDay = null;
+          return;
+        }
+
+        selectedDay = dateStr;
+
+        // =====================================================
+        // SALÁRIO
+        // =====================================================
+
+        const salary =
+          data.workLog.some(
+            d => d.date === dateStr && d.worked
+          ) ? 30 : 0;
+
+
+        // =====================================================
+        // GORJETAS
+        // =====================================================
+
+        const tips = data.tips
+          .filter(t => t.date === dateStr)
+          .reduce(
+            (sum, t) => sum + Number(t.value),
+            0
+          );
+
+
+        // =====================================================
+        // RECEITAS EXTRAS
+        // =====================================================
+
+        const extras = data.extraIncomes.filter(
+          e => e.date === dateStr
+        );
+
+        const receita = extras.reduce(
+          (sum, e) => sum + Number(e.amount),
+          0
+        );
+
+
+        // =====================================================
+        // DESPESAS
+        // =====================================================
+
+        const expenses = data.expenses.filter(
+          e => e.date === dateStr
+        );
+
+        const totalExpenses = expenses.reduce(
+          (sum, e) => sum + Number(e.amount),
+          0
+        );
+
+
+        // =====================================================
+        // PREENCHER VALORES
+        // =====================================================
+
+        document.getElementById('selectedDayLabel').textContent =
+          new Date(dateStr + 'T12:00:00').toLocaleDateString('pt-BR');
+
+        document.getElementById('detailSalary').textContent =
+          salary.toFixed(2);
+
+        document.getElementById('detailTip').textContent =
+          tips.toFixed(2);
+
+        document.getElementById('detailReceita').textContent =
+          receita.toFixed(2);
+
+        document.getElementById('detailExpense').textContent =
+          totalExpenses.toFixed(2);
+
+
+        // =====================================================
+        // DETALHES DAS RECEITAS EXTRAS
+        // =====================================================
+
+        const receitaList =
+          document.getElementById('detailReceitaList');
+
+        receitaList.innerHTML = '';
+
+
+        if (extras.length === 0) {
+
+          const li = document.createElement('li');
+
+          li.textContent = 'Nenhuma receita extra neste dia.';
+
+          receitaList.appendChild(li);
+
+        } else {
+
+          extras.forEach(e => {
+
+            const li = document.createElement('li');
+
+            li.textContent =
+              `€${Number(e.amount).toFixed(2)}` +
+              `${e.desc ? ` - ${e.desc}` : ''}`;
+
+            receitaList.appendChild(li);
+
+          });
+
+        }
+
+
+        // =====================================================
+        // DETALHES DAS DESPESAS
+        // =====================================================
+
+        const expenseList =
+          document.getElementById('detailExpenseList');
+
+        expenseList.innerHTML = '';
+
+
+        if (expenses.length === 0) {
+
+          const li = document.createElement('li');
+
+          li.textContent = 'Nenhuma despesa neste dia.';
+
+          expenseList.appendChild(li);
+
+        } else {
+
+          expenses.forEach(e => {
+
+            const li = document.createElement('li');
+
+            li.textContent =
+              `€${Number(e.amount).toFixed(2)}` +
+              ` - ${e.source}` +
+              `${e.desc ? ` - ${e.desc}` : ''}`;
+
+            expenseList.appendChild(li);
+
+          });
+
+        }
+
+
+        // =====================================================
+        // TOTAL DO DIA
+        // =====================================================
+
+        const total =
+          salary +
+          tips +
+          receita -
+          totalExpenses;
+
+        document.getElementById('detailTotal').textContent =
+          total.toFixed(2);
+
+
+        // Mostrar detalhes
+        dayDetailDiv.style.display = 'block';
+      }
+      
+      function removerDiaTrabalhadoPorData() {
+        const date = document.getElementById('removerData').value;
+        if (!date) return alert("Escolha uma data.");
+
+        if (!data.workLog.some(d => d.date === date && d.worked)) {
+          return alert("Esse dia não está registrado como trabalhado.");
+        }
+
+        const confirmacao = confirm(`Deseja remover o dia de trabalho em ${formatarData(date)}?`);
+        if (confirmacao) {
+          data.workLog = data.workLog.filter(d => d.date !== date);
+          data.salaryDays = Math.max(0, data.salaryDays - 1);
+
+          // Remove gorjetas desse dia
+          data.tips = data.tips.filter(t => t.date !== date);
+
+          saveData();
+          updateDisplay();
+          updateMonthlySummary();
+          alert("Dia de trabalho removido.");
+        }
+      }
+
+      function removerDespesasPorData() {
+        const date = document.getElementById('removerData').value;
+        if (!date) return alert("Escolha uma data.");
+        const despesasDoDia = data.expenses.filter(e => e.date === date);
+        if (despesasDoDia.length === 0) {
+          return alert("Nenhuma despesa registrada nesse dia.");
+        }
+        const confirmacao = confirm(`Remover todas as despesas do dia ${formatarData(date)}?`);
+        if (confirmacao) {
+          data.expenses = data.expenses.filter(e => e.date !== date);
+          saveData();
+          updateDisplay();
+          updateMonthlySummary();
+          alert("Despesas removidas.");
+        }
+      }
+
+      function removerReceitaPorData() {
+        const date = document.getElementById('removerData').value;
+        if (!date) return alert("Escolha uma data.");
+        const receitasDoDia = data.extraIncomes.filter(e => e.date === date);
+        if (receitasDoDia.length === 0) {
+          return alert("Nenhuma receita extra registrada nesse dia.");
+        }
+        const confirmacao = confirm(`Remover todas as receitas extras do dia ${formatarData(date)}?`);
+        if (confirmacao) {
+          data.extraIncomes = data.extraIncomes.filter(e => e.date !== date);
+          saveData();
+          updateDisplay();
+          updateMonthlySummary();
+          alert("Receitas extras removidas.");
+        }
+      }
+
+      function removertodoodia() {
+        const date = document.getElementById('removerData').value;
+        if (!date) return alert("Escolha uma data.");
+
+        const confirmacao = confirm(`Remover todas as entradas do dia ${formatarData(date)}?`);
+        if (confirmacao) {
+          data.workLog = data.workLog.filter(d => d.date !== date);
+          data.salaryDays = Math.max(0, data.salaryDays - 1);
+          data.tips = data.tips.filter(t => t.date !== date);    // Remove gorjetas desse dia
+          data.extraIncomes = data.extraIncomes.filter(e => e.date !== date);
+          data.expenses = data.expenses.filter(e => e.date !== date);
+          saveData();
+          updateDisplay();
+          updateMonthlySummary();
+          alert("Entradas removidas.");
+        }
+      }
+
+      function formatarData(dateStr) {
+        return new Date(dateStr).toLocaleDateString('pt-BR');
+      }
+
+      function removerDespesasPorDataEObs() {
+        const date = document.getElementById('removerData').value;
+        const obs = document.getElementById('removerObs').value.trim().toLowerCase();
+
+        if (!date || !obs) return alert("Preencha a data e a observação.");
+
+        const despesasRemovidas = data.expenses.filter(e =>
+          e.date === date && e.desc.toLowerCase() === obs
+        );
+
+        if (despesasRemovidas.length === 0) {
+          return alert("Nenhuma despesa encontrada com essa data e observação.");
+        }
+
+        const confirmacao = confirm(`Remover ${despesasRemovidas.length} despesa(s) do dia ${formatarData(date)} com observação "${obs}"?`);
+        if (confirmacao) {
+          data.expenses = data.expenses.filter(e =>
+            !(e.date === date && e.desc.toLowerCase() === obs)
+          );
+          saveData();
+          updateDisplay();
+          updateMonthlySummary();
+          alert("Despesas removidas.");
+        }
+      }
+
+      // Inicialização
       updateDisplay();
       updateMonthlySummary();
-      alert("Dia de trabalho removido.");
-    }
-  }
-
-  function removerDespesasPorData() {
-  const date = document.getElementById('removerData').value;
-  if (!date) return alert("Escolha uma data.");
-  const despesasDoDia = data.expenses.filter(e => e.date === date);
-  if (despesasDoDia.length === 0) {
-    return alert("Nenhuma despesa registrada nesse dia.");
-  }
-  const confirmacao = confirm(`Remover todas as despesas do dia ${formatarData(date)}?`);
-    if (confirmacao) {
-      data.expenses = data.expenses.filter(e => e.date !== date);
-      saveData();
-      updateDisplay();
-      updateMonthlySummary();
-      alert("Despesas removidas.");
-    }
-  }
-
-  function removerReceitaPorData() {
-    const date = document.getElementById('removerData').value;
-    if (!date) return alert("Escolha uma data.");
-    const receitasDoDia = data.extraIncomes.filter(e => e.date === date);
-    if (receitasDoDia.length === 0) {
-      return alert("Nenhuma receita extra registrada nesse dia.");
-    }
-    const confirmacao = confirm(`Remover todas as receitas extras do dia ${formatarData(date)}?`);
-    if (confirmacao) {
-      data.extraIncomes = data.extraIncomes.filter(e => e.date !== date);
-      saveData();
-      updateDisplay();
-      updateMonthlySummary();
-      alert("Receitas extras removidas.");
-    }
-  }
-
-  function removertodoodia() {
-    const date = document.getElementById('removerData').value;
-    if (!date) return alert("Escolha uma data.");
-
-    const confirmacao = confirm(`Remover todas as entradas do dia ${formatarData(date)}?`);
-    if (confirmacao) {
-      data.workLog = data.workLog.filter(d => d.date !== date);
-      data.salaryDays = Math.max(0, data.salaryDays - 1);
-      data.tips = data.tips.filter(t => t.date !== date);    // Remove gorjetas desse dia
-      data.extraIncomes = data.extraIncomes.filter(e => e.date !== date);
-      data.expenses = data.expenses.filter(e => e.date !== date);
-      saveData();
-      updateDisplay();
-      updateMonthlySummary();
-      alert("Entradas removidas.");
-    }
-  }
-
-  function formatarData(dateStr) {
-    return new Date(dateStr).toLocaleDateString('pt-BR');
-  }
-
-  function removerDespesasPorDataEObs() {
-    const date = document.getElementById('removerData').value;
-    const obs = document.getElementById('removerObs').value.trim().toLowerCase();
-
-    if (!date || !obs) return alert("Preencha a data e a observação.");
-
-    const despesasRemovidas = data.expenses.filter(e =>
-      e.date === date && e.desc.toLowerCase() === obs
-    );
-
-    if (despesasRemovidas.length === 0) {
-      return alert("Nenhuma despesa encontrada com essa data e observação.");
-    }
-
-    const confirmacao = confirm(`Remover ${despesasRemovidas.length} despesa(s) do dia ${formatarData(date)} com observação "${obs}"?`);
-    if (confirmacao) {
-      data.expenses = data.expenses.filter(e =>
-        !(e.date === date && e.desc.toLowerCase() === obs)
-      );
-      saveData();
-      updateDisplay();
-      updateMonthlySummary();
-      alert("Despesas removidas.");
-    }
-  }
-
-    // Inicialização
-    updateDisplay();
-    updateMonthlySummary();
-    document.getElementById('customWorkDate').value = new Date().toISOString().split('T')[0];
-    document.getElementById('customExpenseDate').value = new Date().toISOString().split('T')[0];
-  </script>
-</body>
-</html>
+      document.getElementById('customWorkDate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
+    </script>
+</body </html>
