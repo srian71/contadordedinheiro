@@ -376,12 +376,16 @@
         width: 45px;
       }
     }
+
+    .logo-plus {
+      color: #5bd7ca;
+    }
   </style>
 </head>
 
 <body>
 
-  <h1>Meu Saldo+</h1>
+  <h1>Meu Saldo<span class="logo-plus">+</span></h1>
 
   <div class="section" id="values">
     <h2>Painel de Valores</h2>
@@ -1628,4 +1632,5 @@
     document.getElementById('customWorkDate').value = new Date().toISOString().split('T')[0];
     document.getElementById('expenseDate').value = new Date().toISOString().split('T')[0];
   </script>
-</body </html>
+</body>
+</html>
