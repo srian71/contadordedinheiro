@@ -92,7 +92,8 @@
     }
 
     .calendar-day {
-      min-height: 75px;
+      min-height: 42px;
+      max-height: 42px;
       background: #252525;
       color: #fff;
       border-radius: 8px;
@@ -119,7 +120,7 @@
 
     .calendar-day .day-saldo {
       margin-top: 8px;
-      font-size: 0.85rem;
+      font-size: 9px;
       font-weight: bold;
       word-break: break-word;
     }
@@ -936,7 +937,7 @@
           ) {
 
             saldoElement.textContent =
-              `${saldo >= 0 ? '+' : ''}€${saldo.toFixed(2)}`;
+              `€${saldo >= 0 ? '+' : ''}${saldo.toFixed(2)}`;
 
           } else {
 
