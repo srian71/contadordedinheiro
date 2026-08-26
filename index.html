@@ -651,7 +651,18 @@
         const list = document.getElementById('expenseDetailsList');
         list.innerHTML = '';
 
+        if (monthExpenses.length === 0) {
+
+          const li = document.createElement('li');
+
+          li.textContent = 'Nenhuma despesa neste mês.';
+
+          list.appendChild(li);
+
+        } else {
+
         monthExpenses
+        
           .sort((a, b) => a.date.localeCompare(b.date))
           .forEach(e => {
 
@@ -668,6 +679,7 @@
 
             list.appendChild(li);
           });
+        }
 
         // =========================================================
         // TOTAIS DO MÊS
