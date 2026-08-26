@@ -377,6 +377,24 @@
       }
     }
 
+    .total-warning {
+      display: none;
+      width: 100%;
+      box-sizing: border-box;
+      margin: 1rem 0 0;
+      padding: 1rem;
+      background-color: #5c3b00;
+      border: 1px solid #ffb300;
+      color: #ffd54f;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .total-warning.show {
+      display: block;
+    }
+
     .logo-plus {
       color: #5bd7ca;
     }
@@ -394,6 +412,9 @@
       <div>💰 Gorjetas: €<span id="gorjetas">0</span></div>
       <div>💶 Receita Extra: €<span id="receita">0</span></div>
       <div>🧾 Total Geral: €<span id="total">0</span></div>
+      <div id="totalWarning" class="total-warning">
+        ⚠️ Atenção: seu saldo total está zerado!
+      </div>
     </div>
   </div>
 
@@ -602,18 +623,35 @@
       const receitaExpenses = data.expenses.filter(e => e.source === 'receita')
         .reduce((sum, e) => sum + e.amount, 0);
 
-      let remainingSalary = Math.max(0, salaryTotal - salaryExpenses);
-      let remainingTips = Math.max(0, tipsTotal - tipsExpenses);
+      let remainingSalary = salaryTotal - salaryExpenses;
+      let remainingTips = tipsTotal - tipsExpenses;
       const extraIncomeTotal = Array.isArray(data.extraIncomes)
         ? data.extraIncomes.reduce((sum, e) => sum + e.amount, 0)
         : 0;
-      let remainingReceita = Math.max(0, extraIncomeTotal - receitaExpenses);
+      let remainingReceita = extraIncomeTotal - receitaExpenses;
       const grandTotal = remainingSalary + remainingTips + remainingReceita;
 
       document.getElementById('salario').innerText = remainingSalary.toFixed(2);
       document.getElementById('gorjetas').innerText = remainingTips.toFixed(2);
       document.getElementById('receita').innerText = remainingReceita.toFixed(2);
       document.getElementById('total').innerText = grandTotal.toFixed(2);
+
+      const totalWarning = document.getElementById('totalWarning');
+
+      if (grandTotal === 0) {
+        totalWarning.style.backgroundColor = '#5c3b00';
+        totalWarning.style.borderColor = '#ffb300';
+        totalWarning.style.color = '#ffd54f';
+        totalWarning.classList.add('show');
+      } else if (grandTotal < 0) {
+        totalWarning.textContent = 'Atenção: seu saldo total está negativo!';
+        totalWarning.style.backgroundColor = '#650303';
+        totalWarning.style.borderColor = '#aa0000';
+        totalWarning.style.color = '#f44336';
+        totalWarning.classList.add('show');
+      } else {
+        totalWarning.classList.remove('show');
+      }
 
       const logList = document.getElementById('workLogList');
       logList.innerHTML = '';
@@ -1137,7 +1175,7 @@
           tag.classList.add('extra');
 
         } else if (
-          saldo < 0
+          salary + tip + extra < expense && expense > 0
         ) {
 
           tag.classList.add('negativo');
@@ -1150,7 +1188,7 @@
           tag.classList.add('extra_dominante');
 
         } else if (
-          saldo > 0
+          salary + tip + extra > expense && expense > 0
         ) {
 
           tag.classList.add('positivo');
@@ -1502,7 +1540,6 @@
 
       }
 
-
       // =====================================================
       // TOTAL DO DIA
       // =====================================================
@@ -1520,7 +1557,7 @@
       // Mostrar detalhes
       dayDetailDiv.style.display = 'block';
     }
-    
+
     function removerDiaTrabalhadoPorData() {
       const date = document.getElementById('removerData').value;
       if (!date) return alert("Escolha uma data.");
