@@ -575,6 +575,18 @@
       <button onclick="removertodoodia()">🗑️ Remover todas as entradas do dia</button>
   </div>
 
+  <div class="section">
+    <h2>Sincronizar Dados</h2>
+    <p style="font-size: 0.9rem; color: #aaa; text-align: center; margin-bottom: 1rem;">
+      Exporte seus dados para um arquivo no aparelho antigo e importe-o no novo aparelho.
+    </p>
+    
+    <button onclick="exportDataToFile()">📥 Exportar Dados (Baixar Arquivo)</button>
+    
+    <label for="importFile" style="margin-top: 1.5rem;">📤 Importar Dados (Selecionar Arquivo)</label>
+    <input type="file" id="importFile" accept=".json" onchange="importDataFromFile(event)">
+  </div>
+
   <button id="btnTop" onclick="scrollToTop()">▲</button>
 
   <script>
@@ -1661,6 +1673,54 @@
         updateMonthlySummary();
         alert("Despesas removidas.");
       }
+    }
+
+    // Função para exportar os dados para um arquivo .json
+    function exportDataToFile() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "meu_saldo_data.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    // Função para importar os dados de um arquivo .json selecionado
+    function importDataFromFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const importedData = JSON.parse(e.target.result);
+          if (importedData && typeof importedData === 'object') {
+            if (confirm("Atenção: Isso vai substituir os dados atuais deste aparelho pelos dados do arquivo. Deseja continuar?")) {
+              data = importedData;
+              
+              // Garante que as propriedades essenciais existam
+              data.salaryDays = Number(data.salaryDays) || 0;
+              data.tips = Array.isArray(data.tips) ? data.tips : [];
+              data.workLog = Array.isArray(data.workLog) ? data.workLog : [];
+              data.extraIncomes = Array.isArray(data.extraIncomes) ? data.extraIncomes : [];
+              data.expenses = Array.isArray(data.expenses) ? data.expenses : [];
+
+              saveData();
+              updateDisplay();
+              updateMonthlySummary();
+              updateFinanceDashboard();
+              
+              alert("Dados importados com sucesso!");
+            }
+          } else {
+            alert("O arquivo selecionado é inválido.");
+          }
+        } catch (error) {
+          alert("Erro ao ler o arquivo de dados.");
+        }
+      };
+      reader.readAsText(file);
     }
 
     // Inicialização
